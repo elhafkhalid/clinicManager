@@ -1,0 +1,46 @@
+┌──────────────────────────────────────────────────────────┐  
+│                       MAVEN                              │  provided = « Nécessaire pour compiler et exécuter, mais fournie par Tomcat → donc pas dans le WAR. »
+                                                              Exemple : jakarta.servlet-api — mon code écrit extends HttpServlet, mais Tomcat a déjà ce JAR dans son lib/.
+                                                              
+
+│                                                          │  compile = « Nécessaire pour compiler et exécuter, et je dois la fournir → donc dans le WAR. »
+                                                              Exemple : hibernate-core — mon code écrit import org.hibernate.Session; → il me la faut partout.
+
+
+│  src/main/java/  ──javac──▶  target/classes/             │  runtime = « Pas nécessaire pour compiler, mais nécessaire pour exécuter, et je dois la fournir → donc dans le WAR. »
+                                                              Exemple : postgresql — mon code n'écrit jamais import org.postgresql.Driver mais Hibernate la charge à l'exécution via Class.forName.
+│  src/main/webapp/                                        │
+│  libs (.jar)                                             │
+│           │                                              │
+│           ▼  (maven-war-plugin)                          │
+│  target/clinic_war_exploded/   ← UN DOSSIER              │
+└────────────────┬─────────────────────────────────────────┘
+                 │
+                 │  (pas de copie ! juste un lien)
+                 ▼
+┌──────────────────────────────────────────────────────────┐
+│                    INTELLIJ                              │
+│                                                          │
+│  Crée un Tomcat temporaire dans :                        │
+│  %LOCALAPPDATA%\JetBrains\...\tomcat\<hash>\             │
+│                                                          │
+│  Crée conf/Catalina/localhost/ROOT.xml :                 │
+│  <Context docBase="C:\Projects\clinic\target\            │
+│                    clinic_war_exploded" />               │
+│                                                          │
+│  Lance ce Tomcat                                         │
+└────────────────┬─────────────────────────────────────────┘
+                 │
+                 ▼
+┌──────────────────────────────────────────────────────────┐
+│                 TOMCAT (temporaire)                      │
+│                                                          │
+│  1. Lit ROOT.xml                                         │
+│  2. Voit docBase = target/clinic_war_exploded            │
+│  3. Pointe directement dessus (aucune copie)             │
+│  4. Charge WEB-INF/classes, WEB-INF/lib                  │
+│  5. Enregistre @WebServlet                               │
+│  6. Écoute sur 8080                                      │
+│                                                          │
+│  Requête HTTP ──▶ HelloServlet.doGet() ──▶ réponse       │
+└──────────────────────────────────────────────────────────┘

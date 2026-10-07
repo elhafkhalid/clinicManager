@@ -1,0 +1,128 @@
+classDiagram
+    direction TB
+
+    %% ============ HERITAGE ============
+    User <|-- Patient
+    User <|-- Doctor
+
+    %% ============ RELATIONS ============
+    Department "1" --> "*" Specialty : contient
+    Specialty  "1" --> "*" Doctor : possède
+
+    Doctor  "1" --> "*" Availability : avoir
+
+    Patient "1" --> "*" Appointment : demande
+    Doctor  "1" --> "*" Appointment : approuve
+
+    Appointment "1" --> "*" MedicalNote : documente
+
+    %% ============ ENUMS ============
+    User         ..> Role
+    Patient      ..> GroupeSanguin
+    Availability ..> StatutDisponibilite
+    Appointment  ..> TypeAppointment
+    Appointment  ..> StatutAppointment
+    MedicalNote  ..> StatutNote
+
+    %% ============ CLASSES ============
+    class User {
+        -Long id
+        -String nom
+        -String email
+        -String motDePasse
+        -boolean enabled
+        -Role role
+    }
+
+    class Patient {
+        -Long id
+        -String cin
+        -GroupeSanguin groupeSanguin
+    }
+
+    class Doctor {
+        -Long id
+        -String matricule
+        -String titre
+    }
+
+    class Department {
+        -Long id
+        -String name
+    }
+
+    class Specialty {
+        -Long id
+        -String name
+    }
+
+    class Availability {
+        -Long id
+        -DayOfWeek jour
+        -LocalTime heureDebut
+        -LocalTime heureFin
+        -StatutDisponibilite statut
+    }
+
+    class Appointment {
+        -Long id
+        -LocalDateTime dateHeure
+        -String motif
+        -TypeAppointment type
+        -StatutAppointment statut
+    }
+
+    class MedicalNote {
+        -Long id
+        -String diagnostic
+        -String contenu
+        -LocalDateTime date
+        -StatutNote statut
+    }
+
+    %% ============ ENUMERATIONS ============
+    class Role {
+        <<enumeration>>
+        ADMIN
+        DOCTOR
+        PATIENT
+        STAFF
+    }
+
+    class GroupeSanguin {
+        <<enumeration>>
+        A_POSITIF
+        A_NEGATIF
+        B_POSITIF
+        B_NEGATIF
+        AB_POSITIF
+        AB_NEGATIF
+        O_POSITIF
+        O_NEGATIF
+    }
+
+    class StatutDisponibilite {
+        <<enumeration>>
+        DISPONIBLE
+        OCCUPE
+    }
+
+    class TypeAppointment {
+        <<enumeration>>
+        CONSULTATION
+        FOLLOW_UP
+        URGENT
+    }
+
+    class StatutAppointment {
+        <<enumeration>>
+        PLANNED
+        DONE
+        CANCELED
+    }
+
+    class StatutNote {
+        <<enumeration>>
+        DRAFT
+        VALIDATED
+    }

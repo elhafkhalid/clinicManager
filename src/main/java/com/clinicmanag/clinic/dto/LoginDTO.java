@@ -1,0 +1,24 @@
+package com.clinicmanag.clinic.dto;
+
+/**
+ * Données de connexion.
+ */
+public class LoginDTO {
+
+    private String email;
+    private String motDePasse;
+
+    public LoginDTO() {
+    }
+
+    public LoginDTO(String email, String motDePasse) {
+        this.email = email;
+        this.motDePasse = motDePasse;
+    }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getMotDePasse() { return motDePasse; }
+    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
+}
