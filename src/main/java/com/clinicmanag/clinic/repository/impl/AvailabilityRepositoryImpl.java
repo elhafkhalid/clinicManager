@@ -6,6 +6,7 @@ import com.clinicmanag.clinic.util.JpaUtil;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
+import java.util.Optional;
 
 public class AvailabilityRepositoryImpl implements AvailabilityRepository {
 
@@ -26,22 +27,46 @@ public class AvailabilityRepositoryImpl implements AvailabilityRepository {
     }
 
     @Override
-    public Availability save(Availability availability) {
+    public void save(Availability availability) {
         EntityManager em = JpaUtil.getEntityManager();
+
         try {
             em.getTransaction().begin();
+
             if (availability.getId() == null) {
                 em.persist(availability);               // INSERT
             } else {
-                availability = em.merge(availability);  // UPDATE
+                 em.merge(availability);  // UPDATE
             }
+
             em.getTransaction().commit();
-            return availability;
+
         } catch (RuntimeException e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
             throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public Optional<Availability> findById(Long id) {
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            List<Availability> result = em.createQuery(
+                            "SELECT a FROM Availability a " +
+                                    "JOIN FETCH a.doctor " +
+                                    "WHERE a.id = :id",
+                            Availability.class)
+                    .setParameter("id", id)
+                    .getResultList();
+
+            return result.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(result.get(0));
+
         } finally {
             em.close();
         }
